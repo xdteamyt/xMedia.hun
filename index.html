@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>xMedia — Connect and share</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">x</span>
+      <span class="title" id="brandTitle">xMedia</span>
+    </div>
+
+    <div class="search">
+      <input id="searchInput" type="search" placeholder="Search people or posts…" aria-label="Search">
+    </div>
+
+    <nav class="actions" id="navActions">
+      <button id="feedBtn" class="nav-btn">Feed</button>
+      <button id="chatBtn" class="nav-btn">Chat</button>
+      <button id="callsBtn" class="nav-btn">Calls</button>
+      <button id="helpexBtn" class="nav-btn">Helpex</button>
+      <button id="profileBtn" class="nav-btn">Profile</button>
+      <button id="signinBtn" class="nav-btn">Sign in</button>
+      <div class="user-menu">
+        <button id="userMenuBtn" class="avatar btn">?</button>
+        <div id="userDropdown" class="dropdown" hidden>
+          <label style="display:block;padding:0.5rem 0.75rem;color:var(--muted)">Language</label>
+          <select id="uiLangSelect" style="margin:0.25rem 0.75rem;width:calc(100% - 1.5rem)"></select>
+          <label style="display:block;padding:0.5rem 0.75rem;color:var(--muted)">Country</label>
+          <select id="countrySelect" style="margin:0.25rem 0.75rem;width:calc(100% - 1.5rem)"></select>
+          <div style="border-top:1px solid var(--border);margin-top:0.5rem;padding-top:0.5rem">
+            <button id="themeToggle" class="dropdown-btn">Toggle dark theme</button>
+            <button id="resetDemo" class="dropdown-btn">Reset data</button>
+            <button id="logoutBtn" class="dropdown-btn">Log out</button>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="app" class="container" aria-live="polite"></main>
+
+  <footer class="footer">
+    <small id="footerText">© <span id="year"></span> xMedia</small>
+  </footer>
+
+  <!-- Auth modal (register) -->
+  <dialog id="authModal">
+    <form method="dialog" class="auth-form" id="authForm">
+      <h3 id="authTitle">Welcome to xMedia</h3>
+      <p id="authDesc">Sign up with a handle, email or phone, and password.</p>
+
+      <label>
+        <span id="labelHandle">Handle</span>
+        <input name="handle" id="regHandle" type="text" minlength="3" maxlength="20" required placeholder="e.g., botond">
+      </label>
+
+      <label>
+        <span id="labelDisplay">Display name</span>
+        <input name="displayName" id="regDisplay" type="text" maxlength="40" required placeholder="Your name">
+      </label>
+
+      <label>
+        <span id="labelEmail">Email</span>
+        <input name="email" id="regEmail" type="email" placeholder="you@example.com">
+      </label>
+
+      <label>
+        <span id="labelPhone">Phone</span>
+        <input name="phone" id="regPhone" type="tel" placeholder="+36 30 123 4567">
+      </label>
+
+      <label>
+        <span id="labelBio">Bio</span>
+        <textarea name="bio" id="regBio" rows="2" maxlength="160" placeholder="Tell people about yourself"></textarea>
+      </label>
+
+      <label>
+        <span id="labelPassword">Password</span>
+        <input name="password" id="regPassword" type="password" minlength="6" required placeholder="Minimum 6 characters">
+      </label>
+
+      <div class="form-actions">
+        <button value="cancel" type="button" id="authCancel">Cancel</button>
+        <button value="confirm" type="submit" id="authSubmit" class="btn primary">Register</button>
+      </div>
+
+      <p class="auth-tip" id="authTip">Already have an account? Use Sign in.</p>
+    </form>
+  </dialog>
+
+  <!-- Sign in modal -->
+  <dialog id="signInModal">
+    <form method="dialog" class="auth-form" id="signInForm">
+      <h3 id="signInTitle">Sign in</h3>
+      <label>
+        <span id="labelSignHandle">Handle or Email</span>
+        <input name="signHandle" id="signHandle" type="text" required placeholder="handle or email">
+      </label>
+      <label>
+        <span id="labelSignPassword">Password</span>
+        <input name="signPassword" id="signPassword" type="password" required placeholder="Password">
+      </label>
+      <div class="form-actions">
+        <button value="cancel" type="button" id="signCancel">Cancel</button>
+        <button value="confirm" type="submit" id="signSubmit" class="btn primary">Sign in</button>
+      </div>
+      <button type="button" id="forgotBtn" class="btn ghost">Forgot password?</button>
+    </form>
+  </dialog>
+
+  <!-- Post modal -->
+  <dialog id="postModal">
+    <article class="post-detail">
+      <button class="close" id="closePostModal" aria-label="Close">✕</button>
+      <div id="postDetailContent"></div>
+    </article>
+  </dialog>
+
+  <!-- What's new modal -->
+  <dialog id="whatsNewModal">
+    <form method="dialog" class="auth-form">
+      <h3 id="whatsNewTitle">What’s new?</h3>
+      <ul id="whatsNewList">
+        <li>Helpex AI friend — chat anytime</li>
+        <li>Friends + private chat</li>
+        <li>Profile picture uploads</li>
+        <li>Posts with image attachments</li>
+        <li>Calls: camera/microphone, text chat, voice notes, media sharing</li>
+        <li>Name rules: Display name every 7 days; handle free change then 30 days</li>
+      </ul>
+      <div class="form-actions">
+        <button value="confirm" class="btn primary">Got it</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
+<style class="css">:root {
+  --bg: #0f1419;
+  --panel: #1c232b;
+  --text: #e6edf3;
+  --muted: #94a3b8;
+  --primary: #4f46e5;
+  --accent: #22c55e;
+  --danger: #ef4444;
+  --border: #2a3441;
+  --shadow: rgba(0,0,0,0.4);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #f7fafc;
+    --panel: #ffffff;
+    --text: #0f172a;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --shadow: rgba(0,0,0,0.08);
+  }
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.4 system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+}
+
+.brand { display: flex; align-items: center; gap: 0.5rem; }
+.logo {
+  width: 28px; height: 28px; display: grid; place-items: center;
+  background: var(--primary); color: white; border-radius: 6px; font-weight: 700;
+}
+.title { font-weight: 700; letter-spacing: 0.2px; }
+
+.search input {
+  width: min(520px, 50vw);
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+}
+
+.actions { display: flex; align-items: center; gap: 0.5rem; }
+.nav-btn {
+  padding: 0.5rem 0.75rem; border-radius: 8px; border: 1px solid var(--border);
+  background: transparent; color: var(--text); cursor: pointer;
+}
+.nav-btn:hover { border-color: var(--primary); }
+
+.user-menu { position: relative; }
+.avatar.btn {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 1px solid var(--border); background: transparent; color: var(--text);
+}
+.dropdown {
+  position: absolute; right: 0; top: calc(100% + 8px);
+  background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+  box-shadow: 0 8px 24px var(--shadow); padding: 0.25rem; min-width: 220px;
+}
+.dropdown button, .dropdown .dropdown-btn {
+  display: block; width: 100%; text-align: left; padding: 0.5rem 0.75rem;
+  background: transparent; border: none; color: var(--text); cursor: pointer;
+}
+.dropdown button:hover { background: rgba(79,70,229,0.12); }
+
+.container { max-width: 980px; margin: 0 auto; padding: 1rem; }
+.footer { border-top: 1px solid var(--border); padding: 1rem; text-align: center; color: var(--muted); }
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px var(--shadow);
+  padding: 1rem;
+}
+
+.feed { display: grid; gap: 1rem; }
+
+.composer { display: grid; gap: 0.75rem; }
+.composer textarea, .composer input[type="url"], .composer input[type="text"], .composer input[type="file"] {
+  width: 100%; padding: 0.75rem; border: 1px solid var(--border);
+  border-radius: 8px; background: transparent; color: var(--text);
+}
+.composer .actions { display: flex; justify-content: space-between; align-items: center; }
+.btn {
+  padding: 0.5rem 0.75rem; border-radius: 8px; border: 1px solid var(--border);
+  background: transparent; color: var(--text); cursor: pointer;
+}
+.btn.primary { background: var(--primary); border-color: var(--primary); color: white; }
+.btn.danger { background: var(--danger); border-color: var(--danger); color: white; }
+.btn.ghost { background: transparent; border-color: var(--border); }
+
+.post {
+  display: grid; grid-template-columns: 44px 1fr; gap: 0.75rem;
+}
+.post .avatar, .comment .avatar {
+  width: 44px; height: 44px; border-radius: 50%; background: #334155; color: white;
+  display: grid; place-items: center; font-weight: 700; overflow: hidden;
+}
+.post .avatar img, .comment .avatar img {
+  width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
+}
+
+.post .head { display: flex; gap: 0.5rem; align-items: baseline; }
+.post .handle { color: var(--muted); font-size: 0.9rem; }
+.post .time { color: var(--muted); font-size: 0.85rem; margin-left: auto; }
+.post .text { margin: 0.5rem 0; white-space: pre-wrap; }
+.post .image { border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+.post .image img { width: 100%; display: block; }
+.post .actions { display: flex; gap: 0.75rem; }
+.post .actions .stat { color: var(--muted); font-size: 0.9rem; }
+
+.comment {
+  display: grid; grid-template-columns: 34px 1fr; gap: 0.5rem; margin-top: 0.5rem;
+}
+.comment .avatar { width: 34px; height: 34px; }
+
+.grid-2 { display: grid; gap: 1rem; grid-template-columns: 1fr 320px; }
+@media (max-width: 860px) { .grid-2 { grid-template-columns: 1fr; } }
+
+.aside .panel { padding: 1rem; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; }
+
+dialog {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--text);
+  padding: 0;
+}
+dialog::backdrop { background: rgba(0,0,0,0.4); }
+.auth-form { padding: 1rem; width: min(520px, 90vw); }
+.auth-form h3 { margin: 0.25rem 0 0.5rem; }
+.auth-form label { display: grid; gap: 0.25rem; margin: 0.5rem 0; }
+.auth-form input, .auth-form textarea, .auth-form select {
+  padding: 0.5rem; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text);
+}
+.form-actions { display: flex; justify-content: flex-end; gap: 0.5rem; }
+.auth-tip { color: var(--muted); font-size: 0.9rem; }
+
+.post-detail { padding: 0; width: min(720px, 95vw); }
+.post-detail .close {
+  position: absolute; right: 0.5rem; top: 0.5rem; border: none; background: transparent; color: var(--text); font-size: 1.25rem; cursor: pointer;
+}
+.post-detail #postDetailContent { padding: 1rem; }
+
+.muted { color: var(--muted); }
+.hidden { display: none !important; }
+
+/* Dark theme toggle */
+.dark {
+  --bg: #0b0f14;
+  --panel: #11161c;
+  --text: #e6edf3;
+  --muted: #7b8797;
+  --border: #1b222b;
+  --shadow: rgba(0,0,0,0.6);
+}
+
+/* Chat */
+.chat { display: grid; gap: 1rem; }
+.chat .message { display: grid; grid-template-columns: 34px 1fr; gap: 0.5rem; }
+.chat .bubble {
+  background: var(--panel); border: 1px solid var(--border);
+  border-radius: 12px; padding: 0.5rem 0.75rem;
+}
+.chat .me .bubble { border-color: var(--primary); }
+.chat .bot .bubble { border-color: var(--accent); }
+
+/* Calls */
+.calls { display: grid; gap: 1rem; }
+.calls .grid-2 { grid-template-columns: 1fr 1fr; }
+.video-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 0.75rem; }
+.video-box { background: #000; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); aspect-ratio: 16/9; display: grid; place-items: center; }
+.video-box video { width: 100%; height: 100%; background: #000; }
+.device-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+.dc-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 0.75rem; }
+.dc-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }</style>
